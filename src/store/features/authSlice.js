@@ -76,10 +76,10 @@ export const signOutUser = createAsyncThunk('auth/signOut', async () => {
 const initialState = {
    isLoading: false,
    isLogin: false,
-   userName: '',
-   email: '',
+   userName: null,
+   email: null,
    isError: false,
-   message: '',
+   message: null,
 }
 
 export const authSlice = createSlice({
@@ -87,6 +87,7 @@ export const authSlice = createSlice({
    initialState,
    extraReducers: (builder) => {
       builder
+         // Sign Up
          .addCase(signUpUser.pending, (state) => {
             state.isLoading = true
          })
@@ -97,6 +98,36 @@ export const authSlice = createSlice({
             state.email = action.payload.email
          })
          .addCase(signUpUser.rejected, (state, action) => {
+            state.isError = true
+            state.message = action.payload
+         })
+
+         // Sign In
+         .addCase(signInUser.pending, (state) => {
+            state.isLoading = true
+         })
+         .addCase(signInUser.fulfilled, (state, action) => {
+            state.isLoading = false
+            state.isLogin = true
+            state.userName = action.payload.username
+            state.email = action.payload.email
+         })
+         .addCase(signInUser.rejected, (state, action) => {
+            state.isError = true
+            state.message = action.payload
+         })
+
+         // Sign Out
+         .addCase(signOutUser.pending, (state) => {
+            state.isLoading = true
+         })
+         .addCase(signOutUser.fulfilled, (state, action) => {
+            state.isLoading = false
+            state.isLogin = false
+            state.userName = null
+            state.email = null
+         })
+         .addCase(signOutUser.rejected, (state, action) => {
             state.isError = true
             state.message = action.payload
          })

@@ -23,7 +23,7 @@ const LoginScreen = () => {
    const dispatch = useDispatch()
    const userData = useSelector((state) => state.auth)
 
-   const loginHandler = () => {
+   const loginHandler = async () => {
       const user = {
          name: username,
          email,
