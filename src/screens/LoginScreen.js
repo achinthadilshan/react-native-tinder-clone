@@ -34,9 +34,17 @@ const LoginScreen = () => {
                   tinder
                </Text>
                {/* Username */}
+               {!islogin && (
+                  <TextInput
+                     className="w-full rounded-xl bg-white p-4"
+                     placeholder="Username"
+                  />
+               )}
+
+               {/* Email */}
                <TextInput
                   className="w-full rounded-xl bg-white p-4"
-                  placeholder="Username"
+                  placeholder="Email"
                   keyboardType="email-address"
                />
 
