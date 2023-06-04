@@ -7,13 +7,6 @@ import {
    signOut,
 } from 'firebase/auth'
 
-const initialState = {
-   isLoading: false,
-   isLogin: false,
-   userName: '',
-   userEmail: '',
-}
-
 export const signUpUser = createAsyncThunk(
    'auth/signUp',
    async (user, thunkAPI) => {
@@ -25,13 +18,20 @@ export const signUpUser = createAsyncThunk(
          )
 
          if (response) {
-            const username = await updateProfile(auth.currentUser, {
+            await updateProfile(auth.currentUser, {
                displayName: user.name,
             })
          }
 
-         return auth.currentUser
+         console.log('register success')
+
+         const userData = {
+            username: auth.currentUser.displayName,
+            email: auth.currentUser.email,
+         }
+         return userData
       } catch (error) {
+         console.log(error.code)
          return thunkAPI.rejectWithValue(error.code)
       }
    }
@@ -47,8 +47,16 @@ export const signInUser = createAsyncThunk(
             user.password
          )
 
-         return auth.currentUser
+         console.log('login success')
+
+         const userData = {
+            username: auth.currentUser.displayName,
+            email: auth.currentUser.email,
+         }
+
+         return userData
       } catch (error) {
+         console.log('login failed')
          return thunkAPI.rejectWithValue(error.code)
       }
    }
@@ -57,33 +65,42 @@ export const signInUser = createAsyncThunk(
 export const signOutUser = createAsyncThunk('auth/signOut', async () => {
    try {
       const response = await signOut(auth)
+      console.log('logout success')
       return response
    } catch (error) {
+      console.log('logout failed')
       return thunkAPI.rejectWithValue(error.code)
    }
 })
 
+const initialState = {
+   isLoading: false,
+   isLogin: false,
+   userName: '',
+   email: '',
+   isError: false,
+   message: '',
+}
+
 export const authSlice = createSlice({
    name: 'auth',
    initialState,
-   reducers: {
-      increment: (state) => {
-         // Redux Toolkit allows us to write "mutating" logic in reducers. It
-         // doesn't actually mutate the state because it uses the Immer library,
-         // which detects changes to a "draft state" and produces a brand new
-         // immutable state based off those changes
-         state.value += 1
-      },
-      decrement: (state) => {
-         state.value -= 1
-      },
-      incrementByAmount: (state, action) => {
-         state.value += action.payload
-      },
+   extraReducers: (builder) => {
+      builder
+         .addCase(signUpUser.pending, (state) => {
+            state.isLoading = true
+         })
+         .addCase(signUpUser.fulfilled, (state, action) => {
+            state.isLoading = false
+            state.isLogin = true
+            state.userName = action.payload.username
+            state.email = action.payload.email
+         })
+         .addCase(signUpUser.rejected, (state, action) => {
+            state.isError = true
+            state.message = action.payload
+         })
    },
 })
-
-// Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = authSlice.actions
 
 export default authSlice.reducer

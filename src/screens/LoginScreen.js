@@ -4,16 +4,42 @@ import {
    TextInput,
    KeyboardAvoidingView,
    Pressable,
+   ActivityIndicator,
 } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import Icon from 'react-native-vector-icons/Fontisto'
 import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { signUpUser, signInUser } from '../store/features/authSlice'
 
 const LoginScreen = () => {
    const [islogin, setIsLogin] = useState(true)
+   const [username, setUsername] = useState('')
+   const [email, setEmail] = useState('')
+   const [password, setPassword] = useState('')
    const navigation = useNavigation()
+   const dispatch = useDispatch()
+   const userData = useSelector((state) => state.auth)
+
+   const loginHandler = () => {
+      const user = {
+         name: username,
+         email,
+         password,
+      }
+
+      setUsername('')
+      setEmail('')
+      setPassword('')
+
+      if (islogin) {
+         dispatch(signInUser(user))
+      } else {
+         dispatch(signUpUser(user))
+      }
+   }
 
    useLayoutEffect(() => {
       navigation.setOptions({
@@ -38,14 +64,18 @@ const LoginScreen = () => {
                   <TextInput
                      className="w-full rounded-xl bg-white p-4"
                      placeholder="Username"
+                     value={username}
+                     onChangeText={(text) => setUsername(text)}
                   />
                )}
 
                {/* Email */}
                <TextInput
-                  className="w-full rounded-xl bg-white p-4"
+                  className="mt-2 w-full rounded-xl bg-white p-4"
                   placeholder="Email"
                   keyboardType="email-address"
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
                />
 
                {/* Password */}
@@ -53,18 +83,14 @@ const LoginScreen = () => {
                   className="mt-2 w-full rounded-xl bg-white p-4"
                   placeholder="Password"
                   secureTextEntry={true}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
                />
-               {/* Confirm Password */}
-               {!islogin && (
-                  <TextInput
-                     className="mt-2 w-full rounded-xl bg-white p-4"
-                     placeholder="Confirm Password"
-                     secureTextEntry={true}
-                  />
-               )}
 
                {/* Button */}
-               <Pressable className="mt-4 w-full rounded-xl bg-black p-4">
+               <Pressable
+                  onPress={loginHandler}
+                  className="mt-4 w-full rounded-xl bg-black p-4">
                   <Text className="text-center font-bold text-white">
                      {islogin ? `Login` : `Register`}
                   </Text>
