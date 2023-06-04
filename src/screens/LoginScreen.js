@@ -4,15 +4,16 @@ import {
    TextInput,
    KeyboardAvoidingView,
    Pressable,
-   ActivityIndicator,
+   Keyboard,
 } from 'react-native'
-import React, { useEffect, useLayoutEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import Icon from 'react-native-vector-icons/Fontisto'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { signUpUser, signInUser } from '../store/features/authSlice'
+import { signUpUser, signInUser, selectAuth } from '../store/features/authSlice'
+import Toast from 'react-native-toast-message'
 
 const LoginScreen = () => {
    const [islogin, setIsLogin] = useState(true)
@@ -21,7 +22,7 @@ const LoginScreen = () => {
    const [password, setPassword] = useState('')
    const navigation = useNavigation()
    const dispatch = useDispatch()
-   const userData = useSelector((state) => state.auth)
+   const userData = useSelector(selectAuth)
 
    const loginHandler = async () => {
       const user = {
@@ -33,6 +34,7 @@ const LoginScreen = () => {
       setUsername('')
       setEmail('')
       setPassword('')
+      Keyboard.dismiss()
 
       if (islogin) {
          dispatch(signInUser(user))
@@ -41,11 +43,27 @@ const LoginScreen = () => {
       }
    }
 
-   useLayoutEffect(() => {
-      navigation.setOptions({
-         headerShown: false,
-      })
-   }, [])
+   useEffect(() => {
+      if (islogin && userData.authenticated) {
+         Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'You have successfully signed in',
+         })
+      } else if (!islogin && userData.authenticated) {
+         Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'You have successfully signed up',
+         })
+      } else if (userData.isError) {
+         Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: userData.message.replace('auth/', ''),
+         })
+      }
+   }, [userData])
 
    return (
       <LinearGradient

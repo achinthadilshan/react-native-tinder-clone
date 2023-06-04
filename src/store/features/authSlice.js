@@ -23,15 +23,12 @@ export const signUpUser = createAsyncThunk(
             })
          }
 
-         console.log('register success')
-
          const userData = {
             username: auth.currentUser.displayName,
             email: auth.currentUser.email,
          }
          return userData
       } catch (error) {
-         console.log(error.code)
          return thunkAPI.rejectWithValue(error.code)
       }
    }
@@ -47,8 +44,6 @@ export const signInUser = createAsyncThunk(
             user.password
          )
 
-         console.log('login success')
-
          const userData = {
             username: auth.currentUser.displayName,
             email: auth.currentUser.email,
@@ -56,7 +51,6 @@ export const signInUser = createAsyncThunk(
 
          return userData
       } catch (error) {
-         console.log('login failed')
          return thunkAPI.rejectWithValue(error.code)
       }
    }
@@ -65,17 +59,15 @@ export const signInUser = createAsyncThunk(
 export const signOutUser = createAsyncThunk('auth/signOut', async () => {
    try {
       const response = await signOut(auth)
-      console.log('logout success')
       return response
    } catch (error) {
-      console.log('logout failed')
       return thunkAPI.rejectWithValue(error.code)
    }
 })
 
 const initialState = {
    isLoading: false,
-   isLogin: false,
+   authenticated: false,
    userName: null,
    email: null,
    isError: false,
@@ -93,7 +85,7 @@ export const authSlice = createSlice({
          })
          .addCase(signUpUser.fulfilled, (state, action) => {
             state.isLoading = false
-            state.isLogin = true
+            state.authenticated = true
             state.userName = action.payload.username
             state.email = action.payload.email
          })
@@ -108,7 +100,7 @@ export const authSlice = createSlice({
          })
          .addCase(signInUser.fulfilled, (state, action) => {
             state.isLoading = false
-            state.isLogin = true
+            state.authenticated = true
             state.userName = action.payload.username
             state.email = action.payload.email
          })
@@ -123,7 +115,7 @@ export const authSlice = createSlice({
          })
          .addCase(signOutUser.fulfilled, (state, action) => {
             state.isLoading = false
-            state.isLogin = false
+            state.authenticated = false
             state.userName = null
             state.email = null
          })
@@ -133,5 +125,7 @@ export const authSlice = createSlice({
          })
    },
 })
+
+export const selectAuth = (state) => state.auth
 
 export default authSlice.reducer
