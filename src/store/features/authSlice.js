@@ -26,6 +26,7 @@ export const signUpUser = createAsyncThunk(
          const userData = {
             username: auth.currentUser.displayName,
             email: auth.currentUser.email,
+            image: auth.currentUser.photoURL ? auth.currentUser.photoURL : null,
          }
          return userData
       } catch (error) {
@@ -47,6 +48,7 @@ export const signInUser = createAsyncThunk(
          const userData = {
             username: auth.currentUser.displayName,
             email: auth.currentUser.email,
+            image: auth.currentUser.photoURL ? auth.currentUser.photoURL : null,
          }
 
          return userData
@@ -70,6 +72,7 @@ const initialState = {
    authenticated: false,
    userName: null,
    email: null,
+   image: null,
    isError: false,
    message: null,
 }
@@ -88,8 +91,10 @@ export const authSlice = createSlice({
             state.authenticated = true
             state.userName = action.payload.username
             state.email = action.payload.email
+            state.image = action.payload.image
          })
          .addCase(signUpUser.rejected, (state, action) => {
+            state.image = null
             state.isError = true
             state.message = action.payload
          })
@@ -103,8 +108,10 @@ export const authSlice = createSlice({
             state.authenticated = true
             state.userName = action.payload.username
             state.email = action.payload.email
+            state.image = action.payload.image
          })
          .addCase(signInUser.rejected, (state, action) => {
+            state.image = null
             state.isError = true
             state.message = action.payload
          })
@@ -118,6 +125,7 @@ export const authSlice = createSlice({
             state.authenticated = false
             state.userName = null
             state.email = null
+            state.image = null
          })
          .addCase(signOutUser.rejected, (state, action) => {
             state.isError = true
