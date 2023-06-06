@@ -6,7 +6,7 @@ import {
    Image,
    ActivityIndicator,
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAuth, signOutUser } from '../store/features/authSlice'
@@ -19,6 +19,7 @@ const HomeScreen = () => {
    const navigation = useNavigation()
    const dispatch = useDispatch()
    const userData = useSelector(selectAuth)
+   const swipeRef = useRef(null)
 
    const signOutHandler = () => {
       dispatch(signOutUser())
@@ -46,7 +47,7 @@ const HomeScreen = () => {
    }, [])
 
    return (
-      <SafeAreaView>
+      <SafeAreaView className="flex-1">
          {/* Header */}
          <View className="flex-row items-center justify-between px-5 py-3">
             <Pressable onPress={signOutHandler}>
@@ -63,7 +64,7 @@ const HomeScreen = () => {
                )}
             </Pressable>
 
-            <Pressable>
+            <Pressable onPress={() => navigation.navigate('Modal')}>
                <Image
                   className="h-14 w-14"
                   source={require('../../assets/images/tinder.png')}
@@ -82,12 +83,16 @@ const HomeScreen = () => {
                <ActivityIndicator size={'large'} />
             </View>
          ) : (
-            <View className="flex-1">
+            <View className=" h-3/4 w-full flex-1">
                <Swiper
+                  ref={swipeRef}
                   cards={dummyData}
                   stackSize={5}
                   verticalSwipe={false}
                   infinite={true}
+                  backgroundColor={'transparent'}
+                  cardVerticalMargin={20}
+                  marginBottom={20}
                   onSwipedLeft={() => {
                      // console.log('pass LEFT')
                   }}
@@ -136,6 +141,19 @@ const HomeScreen = () => {
             </View>
          )}
          {/* End of cards */}
+
+         <View className="w-full flex-row items-center justify-evenly pb-2">
+            <Pressable
+               className="rounded-full bg-red-300 p-3"
+               onPress={() => swipeRef.current.swipeLeft()}>
+               <Icon name="ios-close" size={30} color={'red'} />
+            </Pressable>
+            <Pressable
+               className="rounded-full bg-green-300 p-3"
+               onPress={() => swipeRef.current.swipeRight()}>
+               <Icon name="heart" size={30} color={'green'} />
+            </Pressable>
+         </View>
       </SafeAreaView>
    )
 }
