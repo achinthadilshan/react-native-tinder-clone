@@ -12,14 +12,16 @@ const StackNavigator = () => {
    const userData = useSelector(selectAuth)
    return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-         {userData.authenticated ? (
+         {/* {userData.authenticated ? (
             <>
                <Stack.Screen name="Home" component={HomeScreen} />
                <Stack.Screen name="Chat" component={ChatScreen} />
             </>
          ) : (
             <Stack.Screen name="Login" component={LoginScreen} />
-         )}
+         )} */}
+
+         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
    )
 }

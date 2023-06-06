@@ -1,4 +1,11 @@
-import { View, Text, SafeAreaView, Pressable, Image } from 'react-native'
+import {
+   View,
+   Text,
+   SafeAreaView,
+   Pressable,
+   Image,
+   ActivityIndicator,
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,6 +15,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 
 const HomeScreen = () => {
    const [dummyData, setDummyData] = useState([])
+   const [isLoading, setIsLoading] = useState(true)
    const navigation = useNavigation()
    const dispatch = useDispatch()
    const userData = useSelector(selectAuth)
@@ -17,22 +25,24 @@ const HomeScreen = () => {
    }
 
    useEffect(() => {
-      // const url = 'https://randomuser.me/api/?results=10'
-      const url = 'https://jsonplaceholder.typicode.com/users'
+      const url = 'https://dummyjson.com/users'
 
       const fetchData = async () => {
-         const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-               Accept: 'application/json',
-               'Content-Type': 'application/json',
-            },
-         })
-         console.log(response)
+         try {
+            const response = await fetch(url)
+            const data = await response.json()
+
+            if (data) {
+               setDummyData((prev) => [...prev, ...data.users])
+            }
+            setIsLoading(false)
+         } catch (error) {
+            console.log(error)
+            return
+         }
       }
 
       fetchData()
-      // setDummyData((prev) => [...prev, ...response.results])
    }, [])
 
    return (
@@ -67,7 +77,38 @@ const HomeScreen = () => {
          {/* End of header */}
 
          {/* Cards */}
-         {/* <Swiper /> */}
+         {isLoading ? (
+            <ActivityIndicator />
+         ) : (
+            <View className="flex-1">
+               <Swiper
+                  cards={dummyData}
+                  stackSize={5}
+                  cardIndex={0}
+                  verticalSwipe={false}
+                  animateCardOpacity
+                  infinite={true}
+                  renderCard={(card) => (
+                     <View
+                        key={card.id}
+                        className="relative h-3/4 rounded-xl bg-white shadow">
+                        <Image
+                           className="h-full w-full rounded-xl bg-gray-400"
+                           source={{ uri: card.image }}
+                        />
+                        <View className="absolute bottom-0 w-full rounded-b-xl bg-white px-5 py-4">
+                           <Text className="text-xl font-bold">
+                              {card.firstName} {card.lastName}
+                           </Text>
+                           <Text className="text-gray-500">
+                              Age: {card.age}
+                           </Text>
+                        </View>
+                     </View>
+                  )}
+               />
+            </View>
+         )}
          {/* End of cards */}
       </SafeAreaView>
    )
