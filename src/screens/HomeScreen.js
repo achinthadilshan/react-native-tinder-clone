@@ -78,16 +78,42 @@ const HomeScreen = () => {
 
          {/* Cards */}
          {isLoading ? (
-            <ActivityIndicator />
+            <View className="h-3/4 w-full items-center justify-center">
+               <ActivityIndicator size={'large'} />
+            </View>
          ) : (
             <View className="flex-1">
                <Swiper
                   cards={dummyData}
                   stackSize={5}
-                  cardIndex={0}
                   verticalSwipe={false}
-                  animateCardOpacity
                   infinite={true}
+                  onSwipedLeft={() => {
+                     // console.log('pass LEFT')
+                  }}
+                  onSwipedRight={() => {
+                     // console.log('pass RIGHT')
+                  }}
+                  overlayLabels={{
+                     left: {
+                        element: (
+                           <View className="h-3/4 items-end rounded-xl bg-red-500/50 p-4">
+                              <Icon
+                                 name="close-circle"
+                                 size={60}
+                                 color={'red'}
+                              />
+                           </View>
+                        ),
+                     },
+                     right: {
+                        element: (
+                           <View className="h-3/4 items-start rounded-xl bg-green-500/50 p-4">
+                              <Icon name="heart" size={60} color={'green'} />
+                           </View>
+                        ),
+                     },
+                  }}
                   renderCard={(card) => (
                      <View
                         key={card.id}
