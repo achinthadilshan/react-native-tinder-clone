@@ -1,11 +1,13 @@
 import { View, Text, SafeAreaView, Pressable, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAuth, signOutUser } from '../store/features/authSlice'
+import Swiper from 'react-native-deck-swiper'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const HomeScreen = () => {
+   const [dummyData, setDummyData] = useState([])
    const navigation = useNavigation()
    const dispatch = useDispatch()
    const userData = useSelector(selectAuth)
@@ -13,6 +15,25 @@ const HomeScreen = () => {
    const signOutHandler = () => {
       dispatch(signOutUser())
    }
+
+   useEffect(() => {
+      // const url = 'https://randomuser.me/api/?results=10'
+      const url = 'https://jsonplaceholder.typicode.com/users'
+
+      const fetchData = async () => {
+         const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+               Accept: 'application/json',
+               'Content-Type': 'application/json',
+            },
+         })
+         console.log(response)
+      }
+
+      fetchData()
+      // setDummyData((prev) => [...prev, ...response.results])
+   }, [])
 
    return (
       <SafeAreaView>
@@ -44,6 +65,10 @@ const HomeScreen = () => {
             </Pressable>
          </View>
          {/* End of header */}
+
+         {/* Cards */}
+         {/* <Swiper /> */}
+         {/* End of cards */}
       </SafeAreaView>
    )
 }

@@ -94,6 +94,7 @@ const LoginScreen = () => {
                   keyboardType="email-address"
                   value={email}
                   onChangeText={(text) => setEmail(text)}
+                  autoCapitalize="none"
                />
 
                {/* Password */}
