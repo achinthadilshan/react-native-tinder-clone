@@ -26,7 +26,7 @@ const HomeScreen = () => {
    }
 
    useEffect(() => {
-      const url = 'https://dummyjson.com/users'
+      const url = 'https://randomuser.me/api/?results=100'
 
       const fetchData = async () => {
          try {
@@ -34,7 +34,7 @@ const HomeScreen = () => {
             const data = await response.json()
 
             if (data) {
-               setDummyData((prev) => [...prev, ...data.users])
+               setDummyData((prev) => [...prev, ...data.results])
             }
             setIsLoading(false)
          } catch (error) {
@@ -121,18 +121,18 @@ const HomeScreen = () => {
                   }}
                   renderCard={(card) => (
                      <View
-                        key={card.id}
+                        key={card.id.value}
                         className="relative h-3/4 rounded-xl bg-white shadow">
                         <Image
                            className="h-full w-full rounded-xl bg-gray-400"
-                           source={{ uri: card.image }}
+                           source={{ uri: card.picture.large }}
                         />
                         <View className="absolute bottom-0 w-full rounded-b-xl bg-white px-5 py-4">
                            <Text className="text-xl font-bold">
-                              {card.firstName} {card.lastName}
+                              {card.name.first} {card.name.last}
                            </Text>
                            <Text className="text-gray-500">
-                              Age: {card.age}
+                              Age: {card.dob.age}
                            </Text>
                         </View>
                      </View>
